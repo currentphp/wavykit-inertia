@@ -1,115 +1,17 @@
-# WavyKit Inertia
+# wavykit/inertia has moved
 
-Share WavyKit's page ID, subject, breadcrumbs, and menus with every Inertia page, with
-TypeScript types for the shared data.
-
-[`wavykit/core`](https://github.com/wavykit/wavykit/tree/main/packages/core)
-describes your application's pages once; this package hands that description
-to your React or Vue frontend as one shared prop, so components stop keeping
-their own breadcrumb arrays and navigation lists.
-
-Package: `wavykit/inertia`. Namespace: `WavyKit\Inertia\`. Maintained by
-WavyKit. The first release is 0.1.0, for `wavykit/core` 0.2. While WavyKit is on 0.x,
-minor releases may change the public API.
-
-## Requirements
-
-PHP 8.3+, Laravel 13, `inertiajs/inertia-laravel` 3, and `wavykit/core` 0.1.
-
-## Installation
+This package is now [`current/inertia`](https://packagist.org/packages/current/inertia),
+developed at [currentphp/monorepo](https://github.com/currentphp/monorepo).
+Version numbers continue: 0.2.0 is the first release under the new name.
 
 ```sh
-composer require wavykit/inertia
+composer remove wavykit/inertia
+composer require current/inertia
 ```
 
-Register pages and menus with `wavykit/core` as its README describes.
+The namespace changed from `WavyKit\` to `Current\`; see the
+[changelog](https://github.com/currentphp/monorepo/blob/main/packages/inertia/CHANGELOG.md)
+for every breaking change. Released versions of `wavykit/inertia` stay
+installable, and this repository is archived.
 
-## Sharing the prop
-
-Add one entry to `share()` in your `HandleInertiaRequests` middleware, under
-any key you like, naming the menus every page needs:
-
-```php
-use WavyKit\Inertia\CurrentProps;
-
-public function share(Request $request): array
-{
-    return [
-        ...parent::share($request),
-        'current' => CurrentProps::make()->menus('primary', 'footer'),
-    ];
-}
-```
-
-Every page then receives:
-
-```json
-{
-    "pageId": "projects.show",
-    "subject": { "kind": "project", "id": "42", "label": "Apollo", "url": "https://example.test/projects/42" },
-    "breadcrumbs": [
-        { "pageId": "projects", "label": "Projects", "url": "https://example.test/projects", "current": false, "icon": null },
-        { "pageId": "projects.show", "label": "Apollo", "url": "https://example.test/projects/42", "current": true, "icon": null }
-    ],
-    "menus": {
-        "primary": [
-            { "pageId": "projects", "label": "Projects", "url": "https://example.test/projects", "current": false, "active": true, "children": [], "icon": "folder", "kind": "page" }
-        ],
-        "footer": []
-    }
-}
-```
-
-- `pageId` is null, and `breadcrumbs` empty, on routes without a registered
-  page. Menus still render, with no active items.
-- `subject` is the current subject from `wavykit/core` (the active page's, or
-  the nearest ancestor's that presents one), or null when there is none.
-- `menus` holds the menus passed to `menus()`, in that order. With no
-  `menus()` call it is an empty object. Unknown menu names raise
-  `WavyKit\Exceptions\ResolutionFailed` when the prop resolves.
-- Labels, URLs, and current and active states follow `wavykit/core`'s rules.
-
-The prop resolves when the response renders, after route-model binding, so
-labels can use bound models. A partial reload that leaves out its key does not
-resolve it at all. To change when it is sent, wrap it in Inertia's own prop
-types, for example `Inertia::defer(fn () => CurrentProps::make()->menus('primary'))`.
-
-## TypeScript types
-
-The package ships hand-written types in
-`vendor/wavykit/inertia/resources/types/wavykit.d.ts`, versioned with the PHP
-output. Map them to an import path in `tsconfig.json`:
-
-```json
-{
-    "compilerOptions": {
-        "paths": {
-            "@wavykit/inertia": ["./vendor/wavykit/inertia/resources/types/wavykit.d.ts"]
-        }
-    }
-}
-```
-
-Then type the shared prop, passing your menu names:
-
-```ts
-import type { Current } from '@wavykit/inertia';
-
-declare module '@inertiajs/core' {
-    export interface InertiaConfig {
-        sharedPageProps: {
-            current: Current<'primary' | 'footer'>;
-        };
-    }
-}
-```
-
-The file also exports `Subject`, `Breadcrumb`, `MenuItem`, and `MenuItemKind` for your
-components.
-
-## Development
-
-Development, checks, and releases run from the WavyKit monorepo; see its
-`docs/monorepo.md`. This repository is a read-only split.
-
-See [the changelog](CHANGELOG.md) for changes.
+Current is a [Wavy](https://wavy.dev) project.
